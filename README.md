@@ -1,2 +1,3 @@
 # hello-world
-testing my first git
+testing my first version
+git
