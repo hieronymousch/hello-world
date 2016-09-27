@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<dbwebdescriptor version='2.0'>
+	<label>FW CPN - SAMPLE 15</label>
+	<description>FW CPN - SAMPLE 15</description>
+	<queries>
+		<!-- METADATA - Always in First Position - Incluse this ws-query if Report DataModel is used -->
+		<ws-query id='METADATA' url='/LRF/XMLWeb/ProcessDescriptor/descriptor/COMMON/MRN_METADATA2.xml' xpath='/dbqueries/*' auth='RealTimeNodeAuth'>
+			<parameter name='pcINFO'>pINFO</parameter>
+			<parameter name='pcLANG'>pLANG</parameter>
+			<parameter name='pcRID'>pRID</parameter>
+			<parameter name='pcCDN'>pUSER</parameter>
+		</ws-query>
+		<!-- Real Queries for Report -->
+		
+			<querystring id='SUMMARY' database='dbnode'>
+				SELECT DATE_FORMAT(date_field, '%Y-%m-%d') 'DATE_FIELD'
+                   ,ifnull(assets_planned,0) 'ASSETS_PLAN'
+                    , assets_count 'ASSETS_THEO'
+                    , round((assets_count*0.7),0) 'ASSETS_REAL'
+                    , round((assets_count*0.7),0) - ifnull(assets_planned,0) 'ASSETS_AVAIL' 
+			FROM
+                (
+					SELECT date_field, date_tk
+						, COUNT(ASSET) AS assets_count
+                    FROM mrqr_assets ma, damrsysl_calendar_dates
+                    WHERE ma.HIGHER_ASSET IS NULL
+						and ma.function like 'pFUNCTION'
+						AND ma.STATUS NOT IN('D','A','B','E','O') AND (ma.STORE NOT LIKE('%VE') OR ma.STORE IS NULL)
+                        AND date_field &gt;= DATE_SUB(CURRENT_DATE, INTERVAL 1 month) AND date_field &lt;= DATE_ADD(CURRENT_DATE, INTERVAL 1 month)
+                        AND MFRDATE &lt;= date_field
+					GROUP BY date_tk
+				) exist_sum
+                left join
+                (
+					SELECT date_tk
+						, sum(mum.nbr_of_assets) AS assets_planned
+                    from mrqr_mission_units_material mum 
+                    INNER JOIN mrqr_mission_participating_units mpu on mum.omu_id=mpu.omu_id, damrsysl_calendar_dates
+                    WHERE mum.function like 'pFUNCTION'
+						AND date_field &gt;= DATE_SUB(CURRENT_DATE, INTERVAL 1 month) AND date_field &lt; DATE_ADD(CURRENT_DATE, INTERVAL 1 month)
+						AND date_field &gt;= mpu.start_date AND date_field &lt; mpu.end_date
+					GROUP BY date_field, date_tk
+				) plan_sum
+                on plan_sum.date_tk=exist_sum.date_tk
+	
+			WHERE
+				(length(replace(replace('pFUNCTION','%',''),'_',''))&gt;=3 
+
+                        )
+		</querystring>
+	</queries>	
+	<parameters>
+		<parameter name='pRID' value='10012'/>		
+		<parameter name='pLANG' value='EN'/>
+		<parameter name='pMODE' value='Main'/>
+		<parameter name='pINFO' value='IPDT'/>
+
+		<parameter name='pENTRY' value='PIVOT'/>
+		<parameter name='pORGANISM' value=''/>
+		<parameter name='pFUNCTION' value='iv8t'/>
+		<parameter name='pR1' value='FUNCTION'/>
+		<parameter name='pR2' value='STATUS'/>
+		<parameter name='pC1' value='ORGANISM'/>
+		<parameter name='pGR1' value='ORGANISM'/>
+		<parameter name='pGR2' value='ORGANISM'/>
+		<parameter name='pGC1' value='STATUS'/>
+	</parameters>
+</dbwebdescriptor>
