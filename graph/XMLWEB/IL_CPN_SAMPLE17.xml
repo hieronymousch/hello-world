@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor>
+   <report type="main">
+      <url>http://opsnode.mil.intra:8080/LRF/XMLWeb/ProcessDescriptor/descriptor/XMLWeb/_SAMPLE/IL_CPN_SAMPLE16/IL_CPN_SAMPLE16.xml</url>
+      <domain/>
+      <subdomain/>
+      <title>CPN_SAMPLE</title>
+      <description/>
+      <secure>1</secure>
+      <techPOC/>
+      <changeHistory>
+         <version id="1" date="22-08-2014">Add main</version>
+      </changeHistory>
+      <tables/>
+      <help/>
+   </report>
+   <label>CPN_SAMPLE</label>
+   <source type="url">DBWeb/ProcessDescriptor/descriptor/_SAMPLE/IL_CPN_SAMPLE17/IL_CPN_SAMPLE17.xml</source>
+   <processing type="xsl">_SAMPLE/IL_CPN_SAMPLE17/XSL/IL_CPN_SAMPLE17.xsl</processing>
+   <result type="text/html; charset=UTF-8" header="no"/>
+</descriptor>
